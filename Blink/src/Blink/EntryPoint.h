@@ -9,11 +9,6 @@ int main(int argc, char** argv)
 {
 	Blink::Log::Init();
 
-	int a = 12;
-
-	BL_CORE_WARN("Initialized Log!");
-	BL_INFO("Hello! Var={0}", a);
-
 	auto app = Blink::CreateApplication();
 	app->Run();
 	delete app;

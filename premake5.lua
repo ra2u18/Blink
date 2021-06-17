@@ -11,10 +11,22 @@ workspace "Blink"
 
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
+-- Include directories relative to root folder (solution dir)
+IncludeDir = {}
+IncludeDir["GLFW"] = "Blink/vendor/GLFW/include"
+IncludeDir["Glad"] = "Blink/vendor/Glad/include"
+IncludeDir["ImGui"] = "Blink/vendor/imgui"
+
+-- Include GLFW premake file into this section of code
+include "Blink/vendor/GLFW"
+include "Blink/vendor/Glad"
+include "Blink/vendor/imgui"
+
 project "Blink"
 	location "Blink"
 	kind "SharedLib"
 	language "C++"
+	staticruntime "off"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -31,18 +43,29 @@ project "Blink"
 	includedirs
 	{
 		"%{prj.name}/src",
-		"%{prj.name}/vendor/spgdlog/include"
+		"%{prj.name}/vendor/spgdlog/include",
+		"%{IncludeDir.GLFW}",
+		"%{IncludeDir.Glad}",
+		"%{IncludeDir.ImGui}"
+	}
+
+	links
+	{
+		"GLFW",
+		"Glad",
+		"ImGui",
+		"opengl32.lib"
 	}
 
 	filter "system:windows"
 		cppdialect "C++17"
-		staticruntime "On"
 		systemversion "latest"
 
 		defines
 		{
 			"BL_PLATFORM_WINDOWS",
-			"BL_BUILD_DLL"
+			"BL_BUILD_DLL",
+			"GLFW_INCLUDE_NONE",
 		}
 
 		postbuildcommands
@@ -52,20 +75,24 @@ project "Blink"
 	
 	filter "configurations:Debug"
 		defines "BL_DEBUG"
+		runtime "Debug"
 		symbols "On"
 
 	filter "configurations:Release"
 		defines "BL_RELEASE"
+		runtime "Release"
 		optimize "On"
 	
 	filter "configurations:Dist"
 		defines "BL_DIST"
+		runtime "Release"
 		optimize "On"
 
 project "Sandbox"
 	location "Sandbox"
 	kind "ConsoleApp"
 	language "C++"
+	staticruntime "off"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -89,7 +116,6 @@ project "Sandbox"
 
 	filter "system:windows"
 		cppdialect "C++17"
-		staticruntime "on"
 		systemversion "latest"
 
 		defines
@@ -99,12 +125,15 @@ project "Sandbox"
 	
 	filter "configurations:Debug"
 		defines "BL_DEBUG"
+		runtime "Debug"
 		symbols "On"
 
 	filter "configurations:Release"
 		defines "BL_RELEASE"
+		runtime "Release"
 		optimize "On"
 	
 	filter "configurations:Dist"
 		defines "BL_DIST"
+		runtime "Release"
 		optimize "On"
