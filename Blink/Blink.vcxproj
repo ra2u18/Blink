@@ -159,9 +159,11 @@
     <ClInclude Include="src\Blink\Events\MouseEvent.h" />
     <ClInclude Include="src\Blink\ImGui\ImGuiLayer.h" />
     <ClInclude Include="src\Blink\Input.h" />
+    <ClInclude Include="src\Blink\KeyCodes.h" />
     <ClInclude Include="src\Blink\Layer.h" />
     <ClInclude Include="src\Blink\LayerStack.h" />
     <ClInclude Include="src\Blink\Log.h" />
+    <ClInclude Include="src\Blink\MouseButtonCodes.h" />
     <ClInclude Include="src\Blink\Window.h" />
     <ClInclude Include="src\Platform\OpenGL\ImGuiOpenGLRenderer.h" />
     <ClInclude Include="src\Platform\Windows\WindowsInput.h" />

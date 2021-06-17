@@ -67,6 +67,8 @@
     <ClInclude Include="src\blpch.h" />
     <ClInclude Include="src\Blink\Input.h" />
     <ClInclude Include="src\Platform\Windows\WindowsInput.h" />
+    <ClInclude Include="src\Blink\KeyCodes.h" />
+    <ClInclude Include="src\Blink\MouseButtonCodes.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Blink\Application.cpp">

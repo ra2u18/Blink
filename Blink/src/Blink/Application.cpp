@@ -34,9 +34,6 @@ namespace Blink {
 			for (Layer* layer : m_LayerStack)
 				layer->OnUpdate();
 
-			auto [x, y] = Input::GetMousePosition();
-			BL_CORE_CRITICAL("Mouse Position: {0}, {1}", x, y);
-
 			// Application updates the window frame by frame
 			m_Window->OnUpdate();
 		}
