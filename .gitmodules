@@ -7,3 +7,9 @@
 [submodule "Blink/vendor/imgui"]
 	path = Blink/vendor/imgui
 	url = https://github.com/TheCherno/imgui
+[submodule "Blink/Blink/vendor/glm"]
+	path = Blink/Blink/vendor/glm
+	url = https://github.com/g-truc/glm
+[submodule "Blink/vendor/glm"]
+	path = Blink/vendor/glm
+	url = https://github.com/g-truc/glm

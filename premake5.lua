@@ -16,6 +16,7 @@ IncludeDir = {}
 IncludeDir["GLFW"] = "Blink/vendor/GLFW/include"
 IncludeDir["Glad"] = "Blink/vendor/Glad/include"
 IncludeDir["ImGui"] = "Blink/vendor/imgui"
+IncludeDir["glm"] = "Blink/vendor/glm"
 
 -- Include GLFW premake file into this section of code
 include "Blink/vendor/GLFW"
@@ -24,9 +25,10 @@ include "Blink/vendor/imgui"
 
 project "Blink"
 	location "Blink"
-	kind "SharedLib"
+	kind "StaticLib"
 	language "C++"
-	staticruntime "off"
+	cppdialect "C++17"
+	staticruntime "on"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -37,7 +39,9 @@ project "Blink"
 	files
 	{
 		"%{prj.name}/src/**.h",
-		"%{prj.name}/src/**.cpp"
+		"%{prj.name}/src/**.cpp",
+		"%{prj.name}/vendor/glm/glm/**.hpp",
+		"%{prj.name}/vendor/glm/glm/**.inl",
 	}
 
 	includedirs
@@ -46,7 +50,8 @@ project "Blink"
 		"%{prj.name}/vendor/spgdlog/include",
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.Glad}",
-		"%{IncludeDir.ImGui}"
+		"%{IncludeDir.ImGui}",
+		"%{IncludeDir.glm}",
 	}
 
 	links
@@ -58,7 +63,6 @@ project "Blink"
 	}
 
 	filter "system:windows"
-		cppdialect "C++17"
 		systemversion "latest"
 
 		defines
@@ -66,33 +70,30 @@ project "Blink"
 			"BL_PLATFORM_WINDOWS",
 			"BL_BUILD_DLL",
 			"GLFW_INCLUDE_NONE",
-		}
-
-		postbuildcommands
-		{
-			("{COPY} %{cfg.buildtarget.relpath} ../bin/" .. outputdir .. "/Sandbox")
+			"_CRT_SECURE_NO_WARNINGS"
 		}
 	
 	filter "configurations:Debug"
 		defines "BL_DEBUG"
 		runtime "Debug"
-		symbols "On"
+		symbols "on"
 
 	filter "configurations:Release"
 		defines "BL_RELEASE"
 		runtime "Release"
-		optimize "On"
+		optimize "on"
 	
 	filter "configurations:Dist"
 		defines "BL_DIST"
 		runtime "Release"
-		optimize "On"
+		optimize "on"
 
 project "Sandbox"
 	location "Sandbox"
 	kind "ConsoleApp"
 	language "C++"
-	staticruntime "off"
+	cppdialect "C++17"
+	staticruntime "on"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -106,7 +107,9 @@ project "Sandbox"
 	includedirs
 	{
 		"Blink/vendor/spgdlog/include",
-		"Blink/src"
+		"Blink/src",
+		"Blink/vendor",
+		"%{IncludeDir.glm}"
 	}
 
 	links
@@ -115,7 +118,6 @@ project "Sandbox"
 	}
 
 	filter "system:windows"
-		cppdialect "C++17"
 		systemversion "latest"
 
 		defines
@@ -126,14 +128,14 @@ project "Sandbox"
 	filter "configurations:Debug"
 		defines "BL_DEBUG"
 		runtime "Debug"
-		symbols "On"
+		symbols "on"
 
 	filter "configurations:Release"
 		defines "BL_RELEASE"
 		runtime "Release"
-		optimize "On"
+		optimize "on"
 	
 	filter "configurations:Dist"
 		defines "BL_DIST"
 		runtime "Release"
-		optimize "On"
+		optimize "on"

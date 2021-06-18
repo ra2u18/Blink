@@ -6,6 +6,8 @@
 #include "Events/Event.h"
 #include "Blink/Events/ApplicationEvent.h"
 
+#include "Blink/ImGui/ImGuiLayer.h"
+
 namespace Blink {
 
 	class BLINK_API Application
@@ -35,6 +37,8 @@ namespace Blink {
 		bool OnWindowClose(WindowCloseEvent& e);
 
 		std::unique_ptr<Window> m_Window;
+		ImGuiLayer* m_ImGuiLayer;
+
 		bool m_Running = true;
 		LayerStack m_LayerStack;
 

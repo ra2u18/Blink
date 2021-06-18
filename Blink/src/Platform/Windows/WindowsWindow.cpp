@@ -3,7 +3,7 @@
 
 #include "Blink/Events/ApplicationEvent.h"
 #include "Blink/Events/KeyEvent.h"
-#include "Blink/Events/MouseEvent.h";
+#include "Blink/Events/MouseEvent.h"
 
 #include <Glad/glad.h>
 
