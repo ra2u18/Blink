@@ -1,9 +1,6 @@
 #pragma once
 
 #include "blpch.h"
-
-#include "Blink/Core.h"
-#include "Blink/Log.h"
 #include "Blink/Events/Event.h"
 
 namespace Blink

@@ -1,7 +1,5 @@
 #pragma once
 
-#include "Blink/Core.h"
-
 namespace Blink
 {
 	class BLINK_API Input

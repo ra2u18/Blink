@@ -5,7 +5,7 @@
 #include "Blink/Events/KeyEvent.h"
 #include "Blink/Events/MouseEvent.h"
 
-#include <Glad/glad.h>
+#include "Platform/OpenGL/OpenGLContext.h"
 
 namespace Blink
 {
@@ -35,7 +35,7 @@ namespace Blink
 		// and then returns immediately, which will cause callbacks associated with
 		// those events to be called.
 		glfwPollEvents();
-		glfwSwapBuffers(m_Window);
+		m_Context->SwapBuffers();
 	}
 
 	void WindowsWindow::SetVSync(bool enabled)
@@ -54,11 +54,10 @@ namespace Blink
 	}
 
 	void WindowsWindow::Init(const WindowProps& props)
-	{
+	{ 
 		m_Data.Title = props.Title;
 		m_Data.Width = props.Width;
 		m_Data.Height = props.Height;
-
 		BL_CORE_INFO("Creating window {0} ({1}, {2})", props.Title, props.Width, props.Height);
 
 		if (!s_GLFWInitialized)
@@ -70,10 +69,9 @@ namespace Blink
 		}
 
 		m_Window = glfwCreateWindow((int)m_Data.Width, (int)m_Data.Height, m_Data.Title.c_str(), nullptr, nullptr);
-		glfwMakeContextCurrent(m_Window);
 
-		int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
-		BL_CORE_ASSERT(status, "Failed to Initialize Glad!")
+		m_Context = new OpenGLContext(m_Window);
+		m_Context->Init();
 
 		// Sets the user-defined pointer of the specified window
 		glfwSetWindowUserPointer(m_Window, &m_Data);

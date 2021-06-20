@@ -5,6 +5,8 @@
 #include "Blink/LayerStack.h"
 #include "Events/Event.h"
 #include "Blink/Events/ApplicationEvent.h"
+#include "Blink/Renderer/Shader.h"
+#include "Blink/Renderer/Buffer.h"
 
 #include "Blink/ImGui/ImGuiLayer.h"
 
@@ -41,6 +43,11 @@ namespace Blink {
 
 		bool m_Running = true;
 		LayerStack m_LayerStack;
+
+		unsigned int m_VertexArray;
+		std::unique_ptr<Shader> m_Shader;
+		std::unique_ptr<VertexBuffer> m_VertexBuffer;
+		std::unique_ptr<IndexBuffer> m_IndexBuffer;
 
 	private:
 		static Application* s_Instance;

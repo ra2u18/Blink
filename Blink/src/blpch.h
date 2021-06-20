@@ -12,6 +12,9 @@
 #include<unordered_map>
 #include<unordered_set>
 
+#include "Blink/Core.h"
+#include "Blink/Log.h"
+
 #ifdef BL_PLATFORM_WINDOWS
 	#include <Windows.h>
 #endif

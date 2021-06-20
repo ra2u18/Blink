@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Blink/Window.h"
+#include "Blink/Renderer/GraphicsContext.h"
+
 #include <GLFW/glfw3.h>
 
 namespace Blink
@@ -29,6 +31,7 @@ namespace Blink
 
 	private:
 		GLFWwindow* m_Window;
+		GraphicsContext* m_Context;
 
 		// Window specific user-defined data
 		struct WindowData

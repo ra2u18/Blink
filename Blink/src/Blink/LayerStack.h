@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Blink/Core.h"
 #include "Layer.h"
 
 #include <vector>
