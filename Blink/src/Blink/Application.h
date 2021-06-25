@@ -7,6 +7,7 @@
 #include "Blink/Events/ApplicationEvent.h"
 #include "Blink/Renderer/Shader.h"
 #include "Blink/Renderer/Buffer.h"
+#include "Blink/Renderer/VertexArray.h"
 
 #include "Blink/ImGui/ImGuiLayer.h"
 
@@ -41,12 +42,17 @@ namespace Blink {
 		ImGuiLayer* m_ImGuiLayer;
 		LayerStack m_LayerStack;
 
-		unsigned int m_VertexArray;
+		unsigned int m_RendererID;
 
-		std::unique_ptr<Window> m_Window;
-		std::unique_ptr<Shader> m_Shader;
-		std::unique_ptr<VertexBuffer> m_VertexBuffer;
-		std::unique_ptr<IndexBuffer> m_IndexBuffer;
+		std::shared_ptr<Window> m_Window;
+		std::shared_ptr<Shader> m_Shader;
+
+		std::shared_ptr<VertexArray> m_VertexArray;
+		std::shared_ptr<VertexBuffer> m_VertexBuffer;
+		std::shared_ptr<IndexBuffer> m_IndexBuffer;
+
+		std::shared_ptr<VertexArray> m_SquareVA;
+		std::shared_ptr<Shader> m_Shader2;
 	private:
 		static Application* s_Instance;
 	};

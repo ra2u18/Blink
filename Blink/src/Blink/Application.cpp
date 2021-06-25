@@ -13,24 +13,6 @@ namespace Blink {
 	// Singleton Application
 	Application* Application::s_Instance = nullptr;
 
-	static GLenum ShaderDataTypeToOpenGLBaseType(ShaderDataType type)
-	{
-		switch (type)
-		{
-			case Blink::ShaderDataType::Float:	   return GL_FLOAT;
-			case Blink::ShaderDataType::Float2:    return GL_FLOAT;
-			case Blink::ShaderDataType::Float3:    return GL_FLOAT;
-			case Blink::ShaderDataType::Float4:    return GL_FLOAT;
-			case Blink::ShaderDataType::Mat3:      return GL_FLOAT;
-			case Blink::ShaderDataType::Mat4:      return GL_FLOAT;
-			case Blink::ShaderDataType::Int:       return GL_INT;
-			case Blink::ShaderDataType::Int2:      return GL_INT;
-			case Blink::ShaderDataType::Int3:      return GL_INT;
-			case Blink::ShaderDataType::Int4:      return GL_INT;
-			case Blink::ShaderDataType::Bool:      return GL_BOOL;
-		}
-	}
-
 	Application::Application()
 	{
 		BL_CORE_ASSERT(!s_Instance, "Application already exists!");
@@ -41,9 +23,9 @@ namespace Blink {
 
 		m_ImGuiLayer = new ImGuiLayer;
 		PushOverlay(m_ImGuiLayer);
-
-		glGenVertexArrays(1, &m_VertexArray);
-		glBindVertexArray(m_VertexArray);
+		
+		// Create Vertex Array
+		m_VertexArray.reset(VertexArray::Create());
 
 		float vertices[3 * 7] = {
 			-0.5, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,
@@ -51,33 +33,81 @@ namespace Blink {
 			 0.0,  0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f,
 		};
 
+		// Create Vertex Buffer
 		m_VertexBuffer.reset(VertexBuffer::Create(vertices, sizeof(vertices)));
+		BufferLayout layout = {
+			{ ShaderDataType::Float3, "a_Position" },
+			{ ShaderDataType::Float4, "a_Color" },
+		};
+		m_VertexBuffer->SetLayout(layout);
 
-		{
-			BufferLayout layout = {
-				{ ShaderDataType::Float3, "a_Position" },
-				{ ShaderDataType::Float4, "a_Color" },
-			};
-	
-			m_VertexBuffer->SetLayout(layout);
-		}
+		// Bind and count share vertex buffer
+		m_VertexArray->AddVertexBuffer(m_VertexBuffer);
 
-		const auto& layout = m_VertexBuffer->GetLayout();
-		/////////////////////////////////////////////////////////////////////////////////
-		/// We can write this for-loop with layout instead of (layout.GetElements() /////
-		/// because we have provided the Buffer layout class with iterators /////////////
-		/////////////////////////////////////////////////////////////////////////////////
-		uint32_t index = 0;
-		for (const auto& element : layout)
-		{
-			glEnableVertexAttribArray(index);
-			glVertexAttribPointer(index, element.GetComponentCount(), ShaderDataTypeToOpenGLBaseType(element.Type), 
-				element.Normalized ? GL_TRUE : GL_FALSE, layout.GetStride(), (const void*)element.Offset);
-			index++;
-		} 
-
+		// Create Index Buffer
 		uint32_t indices[3] = { 0, 1, 2 };
 		m_IndexBuffer.reset(IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
+		m_VertexArray->SetIndexBuffer(m_IndexBuffer);
+
+		//////////////////////////////////////////////////////////////////////////
+		/// TEEST
+		//////////////////////////////////////////////////////////////////////////
+
+		m_SquareVA.reset(VertexArray::Create());
+
+		float squareVertices[4 * 3] = {
+			-0.75, -0.75f, 0.0f,
+			 0.75, -0.75f, 0.0f,
+			 0.75,  0.75f, 0.0f,
+			-0.75,  0.75f, 0.0f
+		};
+		std::shared_ptr<VertexBuffer> squareVB;
+		squareVB.reset(VertexBuffer::Create(squareVertices, sizeof(squareVertices)));
+
+		squareVB->SetLayout({
+			{ ShaderDataType::Float3, "a_Position" },
+		});
+
+		m_SquareVA->AddVertexBuffer(squareVB);
+
+		// Create Index Buffer
+		uint32_t squareIndices[6] = { 0, 1, 2, 2, 3, 0 };
+		std::shared_ptr<IndexBuffer> squareIB;
+		squareIB.reset(IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t)));
+		m_SquareVA->SetIndexBuffer(squareIB);
+
+		std::string vertexSquareSrc = R"(
+			#version 330 core
+				
+			layout(location = 0) in vec3 a_Position;
+
+			out vec3 v_Position;
+
+			void main()
+			{
+				v_Position = a_Position;
+				gl_Position = vec4(a_Position, 1.0);
+			}
+		)";
+
+		std::string fragmentSquareSrc = R"(
+			#version 330 core
+				
+			layout(location = 0) out vec4 color;
+
+			in vec3 v_Position;
+
+			void main()
+			{
+				color = vec4(v_Position * 0.5 + 0.5, 1.0);
+			}
+		)";
+
+		m_Shader2.reset(new Shader(vertexSquareSrc, fragmentSquareSrc));
+
+
+		//////////////////////////////////////////////////////////////////////////
+		//////////////////////////////////////////////////////////////////////////
 
 		// Create Shader
 		std::string vertexSrc = R"(
@@ -109,6 +139,7 @@ namespace Blink {
 			{
 				color = vec4(v_Position * 0.5 + 0.5, 1.0);
 				color = v_Color;
+				color = vec4(0.0, 0.0, 0.0, 1.0);
 			}
 		)";
 
@@ -125,9 +156,13 @@ namespace Blink {
 			glClear(GL_COLOR_BUFFER_BIT);
 
 			// Bind shader
-			m_Shader->Bind();
+			m_Shader2->Bind();
+			m_SquareVA->Bind();
+			glDrawElements(GL_TRIANGLES, m_SquareVA->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
 
-			glBindVertexArray(m_VertexArray);
+			// Bind shader
+			m_Shader->Bind();
+			m_VertexArray->Bind();
 			glDrawElements(GL_TRIANGLES, m_IndexBuffer->GetCount(), GL_UNSIGNED_INT, nullptr);
 
 			// Update each Layer
